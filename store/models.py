@@ -5,12 +5,21 @@ Models for the store app.
 """
 from django.db import models
 
+
+class Collection(models.Model):
+    title = models.CharField(max_length=255)
+    
+
 class Product(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
     price = models.DecimalField(max_digits=6, decimal_places=2)
     inventory = models.IntegerField()
     last_updated = models.DateTimeField(auto_now=True)
+    # Each product belongs to a collection, and each collection can have many products.
+    # The following field creates a one-to-many relationship between Collection and Product.
+    # if a collection is deleted, all products in that collection will not be deleted.
+    collection = models.ForeignKey(Collection, on_delete=models.PROTECT)
     
 
 class Customer(models.Model):
@@ -44,10 +53,33 @@ class Order(models.Model):
     payment_status = models.CharField(max_length=1,
                                       choices=PAYMENT_STATUS_CHOICES,
                                       default=PAYMENT_PENDING)
-    # the following field create one-to-one relationship between Order and Customer
+    # the following field create one-to-many relationship between customer and order
+    # if a customer is deleted, the customer's orders will not be deleted (will be protected).
+    customer = models.ForeignKey(Customer, on_delete=models.PROTECT)
+    
+class OrderItem(models.Model):
+    # If an order is deleted, OrderItem will not be deleted.
+    # I.e, if order has at least one order item, the item will not be deleted.
+    order = models.ForeignKey(Order, on_delete=models.PROTECT)
+    # if we accidentally delete a product, we don't want to delete the order item.
+    product = models.ForeignKey(Product, on_delete=models.PROTECT)
+    quantity = models.PositiveSmallIntegerField()
+    unit_price = models.DecimalField(max_digits=6, decimal_places=2)
 
 class Address(models.Model):
     street = models.CharField(max_length=255)
     city = models.CharField(max_length=255)
     # the following field create one-to-one relationship between Customer and Address
-    customer = models.OneToOneField(Customer, on_delete=models.CASCADE, primary_key=True)
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    
+class Cart(models.Model):
+    # this field will be autopopulated when a cart is created.
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+class CartItem(models.Model):
+    # If a cart is deleted, CartItem will be also be deleted.
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
+    # if a product is deleted, CartItem will be also be deleted.
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveSmallIntegerField()
