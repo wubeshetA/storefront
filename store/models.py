@@ -5,6 +5,9 @@ Models for the store app.
 """
 from django.db import models
 
+class Promotion(models.Model):
+    description = models.CharField(max_length=255)
+    discount = models.FloatField()
 
 class Collection(models.Model):
     title = models.CharField(max_length=255)
@@ -20,7 +23,11 @@ class Product(models.Model):
     # The following field creates a one-to-many relationship between Collection and Product.
     # if a collection is deleted, all products in that collection will not be deleted.
     collection = models.ForeignKey(Collection, on_delete=models.PROTECT)
-    
+    # Each product can have many promotions, and each promotion can have many products.
+    # The following field creates a many-to-many relationship between Promotion and Product.
+    # you can add a key word argument "related_name" to the ManyToManyField to specify the name of the reverse relationship in the Promotion model. By default, Django will use the name of the model in lowercase, followed by _set. e.g products_set.
+    # promotions = models.ManyToManyField(Promotion, related_name="products")
+    promotions = models.ManyToManyField(Promotion, )
 
 class Customer(models.Model):
     MEMBERSHIP_BRONZE = 'B'
