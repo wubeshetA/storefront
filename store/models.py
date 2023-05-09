@@ -11,6 +11,9 @@ class Promotion(models.Model):
 
 class Collection(models.Model):
     title = models.CharField(max_length=255)
+    # on the following feild the related_name='+' means
+    # that we don't need to create a reverse relationship from Collection to Product.
+    featured_product = models.ForeignKey('Product', on_delete=models.SET_NULL, null=True, related_name='+')
     
 
 class Product(models.Model):
