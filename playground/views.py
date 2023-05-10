@@ -48,12 +48,18 @@ def hello_world(request):
     # ================== Using Q objects =================
     
     # Products: inventory < 10 AND price < 20
-    queryset = Product.objects.filter(inventory__lt=10, unit_price__lt=20)
+    # queryset = Product.objects.filter(inventory__lt=10, unit_price__lt=20)
     
     # Products: inventory < 10 OR price < 20
-    queryset = Product.objects.filter(Q(inventory__lt=10) | Q(unit_price__lt=20))
+    # queryset = Product.objects.filter(Q(inventory__lt=10) | Q(unit_price__lt=20))
     
     
+    # ========= comparing two fields =========
+    
+    queryset = Product.objects.filter(inventory = F('unit_price'))
+    for product in queryset:
+        print("=======")
+        print(product.inventory, product.unit_price)
     
     
     
