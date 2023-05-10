@@ -5,7 +5,7 @@ from store.models import Customer
 from store.models import Collection
 from store.models import Order
 from store.models import OrderItem
-
+from django.db.models import Q, F
 # Create your views here.
 def hello_world(request):
     
@@ -43,5 +43,18 @@ def hello_world(request):
     # order_items = OrderItem.objects.filter(product__collection__id=3)
     # for item in order_items:
     #     print(item.id, " " ,item.product.title, item.product.collection.pk, item.product.collection.title)
+    
+    
+    # ================== Using Q objects =================
+    
+    # Products: inventory < 10 AND price < 20
+    queryset = Product.objects.filter(inventory__lt=10, unit_price__lt=20)
+    
+    # Products: inventory < 10 OR price < 20
+    queryset = Product.objects.filter(Q(inventory__lt=10) | Q(unit_price__lt=20))
+    
+    
+    
+    
     
     return render(request, 'hello.html', {'name': 'Wube'})
