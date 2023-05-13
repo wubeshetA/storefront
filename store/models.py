@@ -52,6 +52,8 @@ class Customer(models.Model):
     membership = models.CharField(
         max_length=1, choices=MEMBERSHIP_CHOICES, default=MEMBERSHIP_BRONZE)
     
+    # order_set field will be created automatically because of it's relationship with Order table.
+    
 
 class Order(models.Model):
     PAYMENT_PENDING = 'P'
@@ -68,8 +70,12 @@ class Order(models.Model):
                                       default=PAYMENT_PENDING)
     # the following field create one-to-many relationship between customer and order
     # if a customer is deleted, the customer's orders will not be deleted (will be protected).
+    # Based on the following custormer relationship django will create a field called 'order_set' in the customer model
+    # however we can not use order_set as a reference when querying the customer. we have to use just order.
     customer = models.ForeignKey(Customer, on_delete=models.PROTECT)
     
+    
+    # orderItem_set <--- cuz of the it's relationship with OrderItem
 class OrderItem(models.Model):
     # If an order is deleted, OrderItem will not be deleted.
     # I.e, if order has at least one order item, the item will not be deleted.
