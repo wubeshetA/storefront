@@ -10,11 +10,28 @@ from django.urls import reverse
 
 # Register your models here.
 
+class InventoryFilter(admin.SimpleListFilter):
+    title = 'inventory'
+    parameter_name = 'inventory'
+    
+    def lookups(self, request, model_admin):
+        return [
+            ('<10', 'Low'),
+            ('>=10', 'OK')
+        ]
+    
+    def queryset(self, request, queryset):
+        if self.value() == '<10':
+            return queryset.filter(inventory__lt=10)
+        if self.value() == '>=10':
+            return queryset.filter(inventory__gte=10)
 @admin.register(models.Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = ('title', 'unit_price', 'collection', 'inventory_status')
     list_editable = ('unit_price',)
     list_per_page = 10
+    
+    list_filter = ('collection', 'last_update', InventoryFilter)
     
     @admin.display(ordering='inventory')
     def inventory_status(self, product):
