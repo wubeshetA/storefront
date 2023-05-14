@@ -87,6 +87,7 @@ class CustomerAdmin(admin.ModelAdmin):
 
 @admin.register(models.Order)
 class OrderAdmin(admin.ModelAdmin):
+    autocomplete_fields = ['customer']
     list_display = ('id', 'placed_at', 'customer')
     list_per_page = 10
     # list_select_related attribute is used to optimize the query by pre-fetching the related objects
