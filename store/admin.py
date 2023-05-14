@@ -27,6 +27,7 @@ class InventoryFilter(admin.SimpleListFilter):
             return queryset.filter(inventory__gte=10)
 @admin.register(models.Product)
 class ProductAdmin(admin.ModelAdmin):
+    actions = ['clear_inventory']
     list_display = ('title', 'unit_price', 'collection', 'inventory_status')
     list_editable = ('unit_price',)
     list_per_page = 10
@@ -38,6 +39,15 @@ class ProductAdmin(admin.ModelAdmin):
         if product.inventory < 10:
             return 'Low'
         return 'OK'
+    
+    @admin.action(description='Clear inventory')
+    def clear_inventory(self, request, queryset):
+        """Custom action to clear the inventory of selected products.
+        This action uses queryset.update() method to update multiple rows in the database
+        without having to loop over them individually."""
+        updated_count = queryset.update(inventory=0)
+        self.message_user(request, f'{updated_count} products were successfully updated')
+
     
 @admin.register(models.Customer)
 class CustomerAdmin(admin.ModelAdmin):
