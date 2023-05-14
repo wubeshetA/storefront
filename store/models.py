@@ -66,6 +66,11 @@ class Customer(models.Model):
     
     # order_set field will be created automatically because of it's relationship with Order table.
     
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}"
+    
+    class Meta:
+        ordering = ['first_name', 'last_name']
 
 class Order(models.Model):
     PAYMENT_PENDING = 'P'
