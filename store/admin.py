@@ -27,6 +27,11 @@ class InventoryFilter(admin.SimpleListFilter):
             return queryset.filter(inventory__gte=10)
 @admin.register(models.Product)
 class ProductAdmin(admin.ModelAdmin):
+    
+    autocomplete_fields = ['collection']
+    prepopulated_fields = {
+        'slug': ['title']
+    }
     actions = ['clear_inventory']
     list_display = ('title', 'unit_price', 'collection', 'inventory_status')
     list_editable = ('unit_price',)
@@ -89,6 +94,8 @@ class OrderAdmin(admin.ModelAdmin):
     
 @admin.register(models.Collection)
 class CollectionAdmin(admin.ModelAdmin):
+    
+    search_fields = ['title__istartswith']
     list_display = ('title', 'products_count')
     
     @admin.display(ordering='products_count')
