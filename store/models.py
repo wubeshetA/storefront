@@ -32,9 +32,9 @@ class Product(models.Model):
         max_digits=6, 
         decimal_places=2, 
         null=True, 
-        validators=[MinValueValidator(1)])
+        validators=[MinValueValidator(0)])
     inventory = models.IntegerField(
-        validators=[MinValueValidator(0)]
+        validators=[MinValueValidator(1)]
     )
     last_update = models.DateTimeField(auto_now=True)
     # Each product belongs to a collection, and each collection can have many products.
@@ -107,7 +107,9 @@ class OrderItem(models.Model):
     # if we accidentally delete a product, we don't want to delete the order item.
     product = models.ForeignKey(Product, on_delete=models.PROTECT)
     quantity = models.PositiveSmallIntegerField()
-    unit_price = models.DecimalField(max_digits=6, decimal_places=2)
+    unit_price = models.DecimalField(max_digits=6, 
+                                     decimal_places=2,
+                                     validators=[MinValueValidator(0)])
 
 class Address(models.Model):
     street = models.CharField(max_length=255)
