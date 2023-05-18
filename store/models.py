@@ -31,7 +31,7 @@ class Product(models.Model):
     unit_price = models.DecimalField(
         max_digits=6, 
         decimal_places=2, 
-        null=True, 
+        null=False, 
         validators=[MinValueValidator(0)])
     inventory = models.IntegerField(
         validators=[MinValueValidator(1)]
