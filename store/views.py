@@ -8,7 +8,6 @@ from .models import Collection, Product
 from .serializer import ProductSerializer
 from .serializer import CollectionSerializer
 
-
 #================ Views For Product ================= 
 
 @api_view(["GET", "POST"])
@@ -42,6 +41,7 @@ def product_detail(request, id):
         product.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+
 #================ Views For Collection ================= 
 
 @api_view(['GET', 'POST'])
@@ -59,7 +59,9 @@ def collections_list(request):
 
 @api_view(['GET', 'PUT', 'DELETE'])
 def collection_detail(request, pk):
-    collection = get_object_or_404(Collection, pk=pk)
+    collection = get_object_or_404(
+        Collection.objects.annotate(products_count=Count('products')).all(),
+        pk=pk)
     
     if request.method == "GET":
         serializer = CollectionSerializer(collection)
@@ -72,5 +74,10 @@ def collection_detail(request, pk):
         return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
     
     elif request.method == "DELETE":
+        if collection.products.count() > 0:
+            return Response(
+                {'error': 'You cannot delete a collection that has products.'},
+                status=status.HTTP_405_METHOD_NOT_ALLOWED
+            )
         collection.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)

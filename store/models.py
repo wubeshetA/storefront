@@ -40,7 +40,7 @@ class Product(models.Model):
     # Each product belongs to a collection, and each collection can have many products.
     # The following field creates a one-to-many relationship between Collection and Product.
     # if a collection is deleted, all products in that collection will not be deleted.
-    collection = models.ForeignKey(Collection, on_delete=models.PROTECT)
+    collection = models.ForeignKey(Collection, on_delete=models.PROTECT, related_name="products")
     # Each product can have many promotions, and each promotion can have many products.
     # The following field creates a many-to-many relationship between Promotion and Product.
     # you can add a key word argument "related_name" to the ManyToManyField to specify the name of the reverse relationship in the Promotion model. By default, Django will use the name of the model in lowercase, followed by _set. e.g products_set.
