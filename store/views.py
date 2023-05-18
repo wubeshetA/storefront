@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework import status
 from .models import Collection, Product
 from .serializer import ProductSerializer
 
@@ -10,18 +11,33 @@ from .serializer import ProductSerializer
 #     collections = Product.objects.all()
 #     return Response(collections)
 
-@api_view()
+@api_view(["GET", "POST"])
 def products_list(request):
+    if request.method == "GET":
+        products = Product.objects.select_related('collection').all()
+        serializer = ProductSerializer(products, many=True, context={'request': request})
+        return Response(serializer.data)
+    
+    elif request.method == "POST":
+        serializer = ProductSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    products = Product.objects.select_related('collection').all()
-    serializer = ProductSerializer(products, many=True, context={'request': request})
-    return Response(serializer.data)
-
-@api_view()
+@api_view(["GET", "PUT", "DELETE"])
 def product_detail(request, id):
+    
     product = get_object_or_404(Product, pk=id)
-    serializer = ProductSerializer(product)
-    return Response(serializer.data)
+    if request.method == "GET":
+        serializer = ProductSerializer(product)
+        return Response(serializer.data)
+    
+    elif request.method == "PUT":
+        serializer = ProductSerializer(product, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+
 
 @api_view()
 def collections_list(request, pk):

@@ -16,13 +16,12 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = [
-
             'title',
             'description',
             'unit_price',
             'price_with_tax',
+            'inventory',
             'collection',
-        
         ]
         
     """The following fields were added when the serializer was created
@@ -48,9 +47,18 @@ class ProductSerializer(serializers.ModelSerializer):
     # collection = CollectionSerializer()
     
     # Adding RelatedField by HyperlinkedRelatedField
-    collection = serializers.HyperlinkedRelatedField(
-        view_name='collection-detail',
-        read_only=True)
+    
+    # collection = serializers.HyperlinkedRelatedField(
+    #     view_name='collection-detail',
+    #     read_only=True)
     
     def calculate_tax(self, product: Product):
         return product.unit_price * Decimal(1.1)
+    
+    
+    # the following validate method is a method of ModelSerializer class and 
+    # it can be overridden to validate data before deserialization
+    def validate(self, data):
+        if data['title'] == data['description']:
+            raise serializers.ValidationError('Title and Description should be different from each other.')
+        return data
