@@ -61,26 +61,38 @@ class ProductList(ListCreateAPIView):
 #     def get_serializer_class(self):
 #         return ProductSerializer
 
+
+# =======products details
+# class ProductDetail(APIView):
     
-class ProductDetail(APIView):
+#     def product(self, id):
+#         return get_object_or_404(Product, pk=id)
     
-    def product(self, id):
-        return get_object_or_404(Product, pk=id)
+#     def get(self, request, id):
+#         serializer = ProductSerializer(self.product(id))
+#         return Response(serializer.data)
     
-    def get(self, request, id):
-        serializer = ProductSerializer(self.product(id))
-        return Response(serializer.data)
+#     def put(self, request, id):
+#         serializer = ProductSerializer(self.product(id), data=request.data)
+#         serializer.is_valid(raise_exception=True)
+#         serializer.save()
+#         return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
     
-    def put(self, request, id):
-        serializer = ProductSerializer(self.product(id), data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+#     def delete(self, request, id):
+#         self.product(id).delete()
+#         return Response(status=status.HTTP_204_NO_CONTENT)
     
-    def delete(self, request, id):
-        self.product(id).delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+# recreate the above views using GenericAPIView and mixins
+class ProductDetail(RetrieveUpdateDestroyAPIView):
     
+    # queryset = Product.objects.all()
+    # lookup_field = 'id'
+    
+    # we can use the above 2 lines of or the following line of code
+    def get_object(self):
+         return get_object_or_404(Product, pk=self.kwargs.get('id'))
+    
+    serializer_class = ProductSerializer
     
 
 """The following commented code is the same as the above code, but it is 
