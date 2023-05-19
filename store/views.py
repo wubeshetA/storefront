@@ -168,6 +168,9 @@ written as a function-based view instead of a class-based view."""
 #         serializer.save()
 #         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+
+
+"""
 class CollectionDetail(APIView):
             
             def collection(self, id):
@@ -192,7 +195,29 @@ class CollectionDetail(APIView):
                         status=status.HTTP_405_METHOD_NOT_ALLOWED
                     )
                 self.collection(id).delete()
-                return Response(status=status.HTTP_204_NO_CONTENT)
+                return Response(status=status.HTTP_204_NO_CONTENT)"""
+                
+                
+# convert the above view to a generic view using GenericAPIView and mixins
+class CollectionDetail(RetrieveUpdateDestroyAPIView):
+        
+        queryset = Collection.objects.annotate(products_count=Count('products')).all()
+        # We the following line of code as alternative to the above line of code
+        # def get_object(self):
+        #     return get_object_or_404(
+        #         Collection.objects.annotate(products_count=Count('products')).all(),
+        #         pk=self.kwargs.get('pk'))
+            
+        # override the destroy method to check if the collection has products
+        def destroy(self, request, *args, **kwargs):
+            if self.get_object().products.count() > 0:
+                return Response(
+                    {'error': 'You cannot delete a collection that has products.'},
+                    status=status.HTTP_405_METHOD_NOT_ALLOWED
+                )
+            return super().destroy(request, *args, **kwargs)
+        
+        serializer_class = CollectionSerializer
 
 """The following commented code is the same as the above code, but it is
 written as a function-based view instead of a class-based view."""
