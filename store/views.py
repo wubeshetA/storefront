@@ -7,7 +7,8 @@ from rest_framework import status
 from rest_framework.views import APIView
 # from rest_framework import mixins
 # import GenericAPIView 
-from rest_framework.generics import ListCreateAPIView
+from rest_framework.generics import (ListCreateAPIView, 
+                                     RetrieveUpdateDestroyAPIView)
 from .models import Collection, Product
 from .serializer import ProductSerializer
 from .serializer import CollectionSerializer
@@ -23,9 +24,14 @@ class ProductList(ListCreateAPIView):
     
     def get_serializer_class(self):
         return ProductSerializer
+    
+    def get_serializer_context(self):
+         return {'request': self.request}
     # if queryset attribute is defined, no need to define get_queryset method
     # def get_queryset(self):
     #     return Product.objects.select_related('collection').all()
+
+
 
 # The following commented code is the same as the above code, but it is
 # but it used APIView from rest_framework.views, however, the above code
@@ -44,6 +50,16 @@ class ProductList(ListCreateAPIView):
 #         serializer.save()
 #         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
+
+# class ProductDetail(RetrieveUpdateDestroyAPIView):
+    
+#     # queryset = get_object_or_404(Product, pk=id)
+#     lookup_field = 'id'
+#     def get_queryset(self):
+#          return get_object_or_404(Product, pk=self.kwargs.get('id'))
+     
+#     def get_serializer_class(self):
+#         return ProductSerializer
 
     
 class ProductDetail(APIView):
@@ -97,26 +113,36 @@ written as a function-based view instead of a class-based view.
 #         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-#============================= Views For Collection ========================= 
+#============================= VIEW FOR COLLECTIONS ========================= 
 
 
+class CollectionList(ListCreateAPIView):
+    queryset = Collection.objects.annotate(products_count=Count('products')).all()
+    
+    def get_serializer_class(self):
+        return CollectionSerializer
+    
+# ==================== The following is a APIView class view for CollectionList
+# The above code is a generic view for CollectionList
 
 
-class CollectionList(APIView):
+# class CollectionList(APIView):
         
-        def get(self, request, *args, **kwargs):
-            queryset = Collection.objects.annotate(products_count=Count('product')).all()
-            serializer = CollectionSerializer(queryset, many=True)
-            return Response(serializer.data)
+#         def get(self, request, *args, **kwargs):
+#             queryset = Collection.objects.annotate(products_count=Count('products')).all()
+#             serializer = CollectionSerializer(queryset, many=True)
+#             return Response(serializer.data)
         
-        def post(self, request, *args, **kwargs):
-            serializer = CollectionSerializer(data=request.data)
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+#         def post(self, request, *args, **kwargs):
+#             serializer = CollectionSerializer(data=request.data)
+#             serializer.is_valid(raise_exception=True)
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+
 
 """The following commented code is the same as the above code, but it is
 written as a function-based view instead of a class-based view."""
+
 # @api_view(['GET', 'POST'])
 # def collections_list(request):
 #     if request.method == "GET":
