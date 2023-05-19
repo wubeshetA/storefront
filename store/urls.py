@@ -9,5 +9,5 @@ urlpatterns = [
     # django uses pk to identify the primary key of the model.
     # you should not use id in the path, because it is not the primary key of the model.
     path('collections/', views.CollectionList.as_view()),
-    path('collections/<int:pk>/', views.CollectionDetail, name='collection-detail'),
+    path('collections/<int:pk>/', views.CollectionDetail.as_view(), name='collection-detail'),
 ]
