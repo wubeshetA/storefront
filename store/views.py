@@ -5,25 +5,46 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
-# import mixin
-from rest_framework import mixins
+# from rest_framework import mixins
+# import GenericAPIView 
+from rest_framework.generics import ListCreateAPIView
 from .models import Collection, Product
 from .serializer import ProductSerializer
 from .serializer import CollectionSerializer
 
 #================ Views For Product ================= 
-class ProductList(APIView):
+
+
+
     
-    def get(self, request, *args, **kwargs):
-        products = Product.objects.select_related('collection').all()
-        serializer = ProductSerializer(products, many=True, context={'request': request})
-        return Response(serializer.data)
+class ProductList(ListCreateAPIView):
     
-    def post(self, request, *args, **kwargs):
-        serializer = ProductSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    queryset = Product.objects.select_related('collection').all()
+    
+    def get_serializer_class(self):
+        return ProductSerializer
+    # if queryset attribute is defined, no need to define get_queryset method
+    # def get_queryset(self):
+    #     return Product.objects.select_related('collection').all()
+
+# The following commented code is the same as the above code, but it is
+# but it used APIView from rest_framework.views, however, the above code
+# uses generics
+
+# class ProductList(APIView):
+    
+#     def get(self, request, *args, **kwargs):
+#         products = Product.objects.select_related('collection').all()
+#         serializer = ProductSerializer(products, many=True, context={'request': request})
+#         return Response(serializer.data)
+    
+#     def post(self, request, *args, **kwargs):
+#         serializer = ProductSerializer(data=request.data)
+#         serializer.is_valid(raise_exception=True)
+#         serializer.save()
+#         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+
     
 class ProductDetail(APIView):
     
@@ -76,7 +97,7 @@ written as a function-based view instead of a class-based view.
 #         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-#================ Views For Collection ================= 
+#============================= Views For Collection ========================= 
 
 
 
