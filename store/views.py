@@ -202,22 +202,25 @@ class CollectionDetail(APIView):
 class CollectionDetail(RetrieveUpdateDestroyAPIView):
         
         queryset = Collection.objects.annotate(products_count=Count('products')).all()
-        # We the following line of code as alternative to the above line of code
+        
+        # We can the following line of code as alternative to the above line of code
         # def get_object(self):
         #     return get_object_or_404(
         #         Collection.objects.annotate(products_count=Count('products')).all(),
         #         pk=self.kwargs.get('pk'))
-            
+        
+        serializer_class = CollectionSerializer
         # override the destroy method to check if the collection has products
-        def destroy(self, request, *args, **kwargs):
-            if self.get_object().products.count() > 0:
+        def delete(self, request, pk):
+            collection = get_object_or_404(Collection, pk=pk)
+            if collection.products.count() > 0:
                 return Response(
                     {'error': 'You cannot delete a collection that has products.'},
                     status=status.HTTP_405_METHOD_NOT_ALLOWED
                 )
-            return super().destroy(request, *args, **kwargs)
-        
-        serializer_class = CollectionSerializer
+            collection.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+    
 
 """The following commented code is the same as the above code, but it is
 written as a function-based view instead of a class-based view."""
