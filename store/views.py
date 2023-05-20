@@ -10,8 +10,8 @@ from rest_framework.views import APIView
 from rest_framework.generics import (ListCreateAPIView, 
                                      RetrieveUpdateDestroyAPIView)
 from rest_framework.viewsets import ModelViewSet
-from .models import Collection, OrderItem, Product
-from .serializer import ProductSerializer
+from .models import Collection, OrderItem, Product, Review
+from .serializer import ProductSerializer, ReviewSerializer
 from .serializer import CollectionSerializer
 
 
@@ -288,3 +288,7 @@ class CollectionDetail(RetrieveUpdateDestroyAPIView):
 #             )
 #         collection.delete()
 #         return Response(status=status.HTTP_204_NO_CONTENT)
+
+class ReviewViewSet(ModelViewSet):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
