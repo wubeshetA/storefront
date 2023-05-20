@@ -9,29 +9,67 @@ from rest_framework.views import APIView
 # import GenericAPIView 
 from rest_framework.generics import (ListCreateAPIView, 
                                      RetrieveUpdateDestroyAPIView)
+from rest_framework.viewsets import ModelViewSet
 from .models import Collection, Product
 from .serializer import ProductSerializer
 from .serializer import CollectionSerializer
 
-#================ Views For Product ================= 
 
 
+################### Views For Product ##########################
 
-    
-class ProductList(ListCreateAPIView):
-    
-    queryset = Product.objects.select_related('collection').all()
-    
-    def get_serializer_class(self):
-        return ProductSerializer
-    
+""" ============== Product view using ViewSet ================== """
+class ProductViewSet(ModelViewSet):
+    queryset = Product.objects.all()
+    # def get_queryset(self):
+    #     return Product.objects.select_related('collection').all()
+    serializer_class = ProductSerializer
     def get_serializer_context(self):
-         return {'request': self.request}
+        return {'request': self.request}
+    
+    def delete(self, request, pk):
+        product = get_object_or_404(Product, pk=pk)
+        if product.orderitems.count() > 0:
+            return Response({'message': 'This product cannot be deleted because it has already been ordered.'},
+                            status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        product.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+
+""" ============ GenericView based Product view ================= """ 
+# class ProductList(ListCreateAPIView):
+    
+#     queryset = Product.objects.select_related('collection').all()
+    
+#     def get_serializer_class(self):
+#         return ProductSerializer
+    
+#     def get_serializer_context(self):
+#          return {'request': self.request}
+     
+# class ProductDetail(RetrieveUpdateDestroyAPIView):
+    
+#     # def get_object(self):
+#     #      return get_object_or_404(Product, pk=self.kwargs.get('pk'))
+#     # we can use the above 2 lines of or the following line of code
+#     queryset = Product.objects.all()
+#     serializer_class = ProductSerializer
+    
+#     def delete(self, request, pk):
+#         product = get_object_or_404(Product, pk=pk)
+#         if product.orderitems.count() > 0:
+#             return Response({'message': 'This product cannot be deleted because it has already been ordered.'},
+#                             status=status.HTTP_405_METHOD_NOT_ALLOWED)
+#         product.delete()
+#         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
     # if queryset attribute is defined, no need to define get_queryset method
     # def get_queryset(self):
     #     return Product.objects.select_related('collection').all()
 
-
+"""====================== Product using mixins ======================="""
 
 # The following commented code is the same as the above code, but it is
 # but it used APIView from rest_framework.views, however, the above code
@@ -50,19 +88,7 @@ class ProductList(ListCreateAPIView):
 #         serializer.save()
 #         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
-
-# class ProductDetail(RetrieveUpdateDestroyAPIView):
-    
-#     # queryset = get_object_or_404(Product, pk=id)
-#     lookup_field = 'id'
-#     def get_queryset(self):
-#          return get_object_or_404(Product, pk=self.kwargs.get('id'))
-     
-#     def get_serializer_class(self):
-#         return ProductSerializer
-
-
-# =======products details
+ 
 # class ProductDetail(APIView):
     
 #     def product(self, id):
@@ -81,19 +107,9 @@ class ProductList(ListCreateAPIView):
 #     def delete(self, request, id):
 #         self.product(id).delete()
 #         return Response(status=status.HTTP_204_NO_CONTENT)
-    
-# recreate the above views using GenericAPIView and mixins
-class ProductDetail(RetrieveUpdateDestroyAPIView):
-    
-    # queryset = Product.objects.all()
-    # lookup_field = 'id'
-    
-    # we can use the above 2 lines of or the following line of code
-    def get_object(self):
-         return get_object_or_404(Product, pk=self.kwargs.get('id'))
-    
-    serializer_class = ProductSerializer
-    
+
+
+""" ================ Product view by function view =============================""" 
 
 """The following commented code is the same as the above code, but it is 
 written as a function-based view instead of a class-based view.
@@ -125,79 +141,17 @@ written as a function-based view instead of a class-based view.
 #         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-#============================= VIEW FOR COLLECTIONS ========================= 
+######################### VIEW FOR COLLECTIONS ############################ 
 
 
+""" ================= Collection views using generics ================== """
 class CollectionList(ListCreateAPIView):
     queryset = Collection.objects.annotate(products_count=Count('products')).all()
     
     def get_serializer_class(self):
         return CollectionSerializer
-    
-# ==================== The following is a APIView class view for CollectionList
-# The above code is a generic view for CollectionList
 
 
-# class CollectionList(APIView):
-        
-#         def get(self, request, *args, **kwargs):
-#             queryset = Collection.objects.annotate(products_count=Count('products')).all()
-#             serializer = CollectionSerializer(queryset, many=True)
-#             return Response(serializer.data)
-        
-#         def post(self, request, *args, **kwargs):
-#             serializer = CollectionSerializer(data=request.data)
-#             serializer.is_valid(raise_exception=True)
-#             serializer.save()
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-
-"""The following commented code is the same as the above code, but it is
-written as a function-based view instead of a class-based view."""
-
-# @api_view(['GET', 'POST'])
-# def collections_list(request):
-#     if request.method == "GET":
-#         queryset = Collection.objects.annotate(products_count=Count('product')).all()
-#         serializer = CollectionSerializer(queryset, many=True)
-#         return Response(serializer.data)
-    
-#     elif request.method == "POST":
-#         serializer = CollectionSerializer(data=request.data)
-#         serializer.is_valid(raise_exception=True)
-#         serializer.save()
-#         return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-
-
-"""
-class CollectionDetail(APIView):
-            
-            def collection(self, id):
-                return get_object_or_404(
-                    Collection.objects.annotate(products_count=Count('products')).all(),
-                    pk=id)
-            
-            def get(self, request, id):
-                serializer = CollectionSerializer(self.collection(id))
-                return Response(serializer.data)
-            
-            def put(self, request, id):
-                serializer = CollectionSerializer(self.collection(id), data=request.data)
-                serializer.is_valid(raise_exception=True)
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
-            
-            def delete(self, request, id):
-                if self.collection(id).products.count() > 0:
-                    return Response(
-                        {'error': 'You cannot delete a collection that has products.'},
-                        status=status.HTTP_405_METHOD_NOT_ALLOWED
-                    )
-                self.collection(id).delete()
-                return Response(status=status.HTTP_204_NO_CONTENT)"""
-                
-                
 # convert the above view to a generic view using GenericAPIView and mixins
 class CollectionDetail(RetrieveUpdateDestroyAPIView):
         
@@ -220,10 +174,70 @@ class CollectionDetail(RetrieveUpdateDestroyAPIView):
                 )
             collection.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
-    
 
-"""The following commented code is the same as the above code, but it is
-written as a function-based view instead of a class-based view."""
+
+    
+# ==================== The following is a APIView class view for CollectionList
+# The above code is a generic view for CollectionList
+
+""" ====================== Collection view using mixins ================== """
+
+# class CollectionList(APIView):
+        
+#         def get(self, request, *args, **kwargs):
+#             queryset = Collection.objects.annotate(products_count=Count('products')).all()
+#             serializer = CollectionSerializer(queryset, many=True)
+#             return Response(serializer.data)
+        
+#         def post(self, request, *args, **kwargs):
+#             serializer = CollectionSerializer(data=request.data)
+#             serializer.is_valid(raise_exception=True)
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+# class CollectionDetail(APIView):
+            
+#             def collection(self, id):
+#                 return get_object_or_404(
+#                     Collection.objects.annotate(products_count=Count('products')).all(),
+#                     pk=id)
+            
+#             def get(self, request, id):
+#                 serializer = CollectionSerializer(self.collection(id))
+#                 return Response(serializer.data)
+            
+#             def put(self, request, id):
+#                 serializer = CollectionSerializer(self.collection(id), data=request.data)
+#                 serializer.is_valid(raise_exception=True)
+#                 serializer.save()
+#                 return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+            
+#             def delete(self, request, id):
+#                 if self.collection(id).products.count() > 0:
+#                     return Response(
+#                         {'error': 'You cannot delete a collection that has products.'},
+#                         status=status.HTTP_405_METHOD_NOT_ALLOWED
+#                     )
+#                 self.collection(id).delete()
+#                 return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+""" =========== function-based Collection view using  ============= """
+
+
+# @api_view(['GET', 'POST'])
+# def collections_list(request):
+#     if request.method == "GET":
+#         queryset = Collection.objects.annotate(products_count=Count('product')).all()
+#         serializer = CollectionSerializer(queryset, many=True)
+#         return Response(serializer.data)
+    
+#     elif request.method == "POST":
+#         serializer = CollectionSerializer(data=request.data)
+#         serializer.is_valid(raise_exception=True)
+#         serializer.save()
+#         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
 
 # @api_view(['GET', 'PUT', 'DELETE'])
 # def collection_detail(request, pk):

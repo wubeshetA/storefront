@@ -3,7 +3,7 @@ from . import views
 
 urlpatterns = [
     path('products/', views.ProductList.as_view()),
-    path('products/<int:id>/', views.ProductDetail.as_view()),
+    path('products/<int:pk>/', views.ProductDetail.as_view()),
     
     # on the following path, the <int:pk> is the primary key of the collection.
     # django uses pk to identify the primary key of the model.
