@@ -31,7 +31,7 @@ class Product(models.Model):
     unit_price = models.DecimalField(
         max_digits=6, 
         decimal_places=2, 
-        null=False, 
+        null=True, 
         validators=[MinValueValidator(0)])
     inventory = models.IntegerField(
         validators=[MinValueValidator(1)]
@@ -128,3 +128,10 @@ class CartItem(models.Model):
     # if a product is deleted, CartItem will be also be deleted.
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveSmallIntegerField()
+    
+class Review(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    name = models.CharField(max_length=225) # name of the reviewer
+    description = models.TextField()
+    date = models.DateTimeField(auto_now_add=True)
+    
