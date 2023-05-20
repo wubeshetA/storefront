@@ -1,6 +1,6 @@
 from decimal import Decimal
 from rest_framework import serializers
-from .models import Product, Collection
+from .models import Product, Collection, Review
 
 
 class CollectionSerializer(serializers.ModelSerializer):
@@ -63,3 +63,9 @@ class ProductSerializer(serializers.ModelSerializer):
         if data['title'] == data['description']:
             raise serializers.ValidationError('Title and Description should be different from each other.')
         return data
+
+class ReviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Review
+        fields = ['id', 'date', 'name', 'description', 'product']
+    
