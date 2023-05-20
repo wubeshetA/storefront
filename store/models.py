@@ -51,7 +51,7 @@ class Product(models.Model):
         return self.title
     
     class Meta:
-        ordering = ['title']   
+        ordering = ['title']
     
 class Customer(models.Model):
     MEMBERSHIP_BRONZE = 'B'
@@ -105,7 +105,7 @@ class OrderItem(models.Model):
     # I.e, if order has at least one order item, the item will not be deleted.
     order = models.ForeignKey(Order, on_delete=models.PROTECT)
     # if we accidentally delete a product, we don't want to delete the order item.
-    product = models.ForeignKey(Product, on_delete=models.PROTECT)
+    product = models.ForeignKey(Product, on_delete=models.PROTECT, related_name='order_items')
     quantity = models.PositiveSmallIntegerField()
     unit_price = models.DecimalField(max_digits=6, 
                                      decimal_places=2,
