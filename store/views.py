@@ -7,9 +7,12 @@ from rest_framework import status
 from rest_framework.views import APIView
 # from rest_framework import mixins
 # import GenericAPIView
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.generics import (ListCreateAPIView, 
                                      RetrieveUpdateDestroyAPIView)
 from rest_framework.viewsets import ModelViewSet
+
+from store.filters import ProductFilter
 from .models import Collection, OrderItem, Product, Review
 from .serializer import ProductSerializer, ReviewSerializer
 from .serializer import CollectionSerializer
@@ -23,13 +26,22 @@ class ProductViewSet(ModelViewSet):
     """
     # * if we want only a readonly operation, we can use ReadOnlyModelViewSet
     # * if we want only a create operation, we can use CreateModelViewSet
-    # queryset = Product.objects.all()
-    def get_queryset(self):
-        queryset = Product.objects.all()
-        collection_id = self.request.query_params.get('collection_id')
-        if collection_id is not None:
-            queryset = queryset.filter(collection_id=collection_id)
-        return queryset
+    queryset = Product.objects.all()
+    filter_backends = [DjangoFilterBackend]
+    # filterset_fields = ['collection_id']
+    filterset_class = ProductFilter
+    
+    # The following queryset is used to filter the products based on the
+    # collection_id. The collection_id is passed as a query parameter.
+    # However, currently we are using DjangoFilterBackend to filter the
+    # so we don't need to have this functionality
+    # def get_queryset(self):
+    #     queryset = Product.objects.all()
+    #     collection_id = self.request.query_params.get('collection_id')
+    #     if collection_id is not None:
+    #         queryset = queryset.filter(collection_id=collection_id)
+    #     return queryset
+    
     serializer_class = ProductSerializer
     def get_serializer_context(self):
         return {'request': self.request}
