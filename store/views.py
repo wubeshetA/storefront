@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404
 # import Count class
 from django.db.models import Count
+from rest_framework.filters import SearchFilter
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -27,9 +28,11 @@ class ProductViewSet(ModelViewSet):
     # * if we want only a readonly operation, we can use ReadOnlyModelViewSet
     # * if we want only a create operation, we can use CreateModelViewSet
     queryset = Product.objects.all()
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = [DjangoFilterBackend, SearchFilter]
     # filterset_fields = ['collection_id']
     filterset_class = ProductFilter
+    # add searching for title and description
+    search_fields = ['title', 'description']
     
     # The following queryset is used to filter the products based on the
     # collection_id. The collection_id is passed as a query parameter.
@@ -57,40 +60,42 @@ class ProductViewSet(ModelViewSet):
 
 
 """ ============ GenericView based Product view ================= """ 
-class ProductList(ListCreateAPIView):
+# class ProductList(ListCreateAPIView):
     
-    queryset = Product.objects.select_related('collection').all()
+    # queryset = Product.objects.select_related('collection').all()
     
-    def get_serializer_class(self):
-        return ProductSerializer
+    # def get_serializer_class(self):
+    #     return ProductSerializer
     
-    def get_serializer_context(self):
-         return {'request': self.request}
+    # def get_serializer_context(self):
+    #      return {'request': self.request}
      
-    def delete(self, request, pk):
-        product = get_object_or_404(Product, pk=pk)
-        if product.orderitems.count() > 0:
-            return Response({'message': 'This product cannot be deleted because \
-                             it has already been ordered.'},
-                            status=status.HTTP_405_METHOD_NOT_ALLOWED)
-        product.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    # def delete(self, request, pk):
+    #     product = get_object_or_404(Product, pk=pk)
+    #     if product.orderitems.count() > 0:
+    #         return Response({'message': 'This product cannot be deleted because \
+    #                          it has already been ordered.'},
+    #                         status=status.HTTP_405_METHOD_NOT_ALLOWED)
+    #     product.delete()
+    #     return Response(status=status.HTTP_204_NO_CONTENT)
     
-class ProductDetail(RetrieveUpdateDestroyAPIView):
     
-    # def get_object(self):
-    #      return get_object_or_404(Product, pk=self.kwargs.get('pk'))
-    # we can use the above 2 lines of or the following line of code
-    queryset = Product.objects.all()
-    serializer_class = ProductSerializer
     
-    def delete(self, request, pk):
-        product = get_object_or_404(Product, pk=pk)
-        if product.orderitems.count() > 0:
-            return Response({'message': 'This product cannot be deleted because it has already been ordered.'},
-                            status=status.HTTP_405_METHOD_NOT_ALLOWED)
-        product.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+# class ProductDetail(RetrieveUpdateDestroyAPIView):
+    
+#     # def get_object(self):
+#     #      return get_object_or_404(Product, pk=self.kwargs.get('pk'))
+#     # we can use the above 2 lines of or the following line of code
+#     queryset = Product.objects.all()
+#     serializer_class = ProductSerializer
+    
+#     def delete(self, request, pk):
+#         product = get_object_or_404(Product, pk=pk)
+#         if product.orderitems.count() > 0:
+#             return Response({'message': 'This product cannot be deleted because it has already been ordered.'},
+#                             status=status.HTTP_405_METHOD_NOT_ALLOWED)
+#         product.delete()
+#         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
     # if queryset attribute is defined, no need to define get_queryset method
