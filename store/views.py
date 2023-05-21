@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404
 # import Count class
 from django.db.models import Count
-from rest_framework.filters import SearchFilter
+from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -28,11 +28,12 @@ class ProductViewSet(ModelViewSet):
     # * if we want only a readonly operation, we can use ReadOnlyModelViewSet
     # * if we want only a create operation, we can use CreateModelViewSet
     queryset = Product.objects.all()
-    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     # filterset_fields = ['collection_id']
     filterset_class = ProductFilter
     # add searching for title and description
     search_fields = ['title', 'description']
+    ordering_fields = ['unit_price', 'last_update']
     
     # The following queryset is used to filter the products based on the
     # collection_id. The collection_id is passed as a query parameter.
