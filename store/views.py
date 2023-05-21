@@ -290,5 +290,10 @@ class CollectionDetail(RetrieveUpdateDestroyAPIView):
 #         return Response(status=status.HTTP_204_NO_CONTENT)
 
 class ReviewViewSet(ModelViewSet):
-    queryset = Review.objects.all()
+    # queryset = Review.objects.all()
+    def get_queryset(self):
+        return Review.objects.filter(product_id=self.kwargs.get('product_pk'))
+    #! use context object to pass additional information to the serializer
+    def get_serializer_context(self):
+        return {'product_id': self.kwargs.get('product_pk')}
     serializer_class = ReviewSerializer
