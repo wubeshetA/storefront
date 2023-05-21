@@ -3,6 +3,7 @@
 """
 Models for the store app.
 """
+import uuid
 from django.db import models
 from django.core.validators import MinValueValidator
 
@@ -119,15 +120,20 @@ class Address(models.Model):
     
 class Cart(models.Model):
     # this field will be autopopulated when a cart is created.
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
 
 class CartItem(models.Model):
     # If a cart is deleted, CartItem will be also be deleted.
-    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
     # if a product is deleted, CartItem will be also be deleted.
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveSmallIntegerField()
+    
+    # make sure that the combination of cart and product is unique.
+    class Meta:
+        unique_together = ['cart', 'product']
     
 class Review(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
