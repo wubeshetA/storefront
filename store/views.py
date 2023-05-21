@@ -1,6 +1,8 @@
 from django.shortcuts import get_object_or_404
 # import Count class
 from django.db.models import Count
+from django_filters.rest_framework import DjangoFilterBackend
+
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -8,12 +10,12 @@ from rest_framework import status
 from rest_framework.views import APIView
 # from rest_framework import mixins
 # import GenericAPIView
-from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.generics import (ListCreateAPIView, 
                                      RetrieveUpdateDestroyAPIView)
 from rest_framework.viewsets import ModelViewSet
 
-from store.filters import ProductFilter
+from .pagination import ProductPagination
+from .filters import ProductFilter
 from .models import Collection, OrderItem, Product, Review
 from .serializer import ProductSerializer, ReviewSerializer
 from .serializer import CollectionSerializer
@@ -34,6 +36,8 @@ class ProductViewSet(ModelViewSet):
     # add searching for title and description
     search_fields = ['title', 'description']
     ordering_fields = ['unit_price', 'last_update']
+    # set pagination
+    pagination_class = ProductPagination
     
     # The following queryset is used to filter the products based on the
     # collection_id. The collection_id is passed as a query parameter.
