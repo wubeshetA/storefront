@@ -11,9 +11,13 @@ router.register(r'carts', views.CartViewSet, basename='cart')
 reviews_router = routers.NestedSimpleRouter(router, r'products', lookup='product')
 reviews_router.register(r'reviews', views.ReviewViewSet, basename='product-reviews')
 
+cart_items_router = routers.NestedSimpleRouter(router, r'carts', lookup='cart')
+cart_items_router.register(r'items', views.CartItemViewSet, basename='cart-items')
+
 urlpatterns = [
     path('', include(router.urls)),
     path('', include(reviews_router.urls)),
+    path('', include(cart_items_router.urls)),
 ]
 
 # if there is a custome path, you can use the following code:
