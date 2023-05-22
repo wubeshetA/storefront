@@ -142,12 +142,13 @@ class AddCartItemSerializer(serializers.ModelSerializer):
         except CartItem.DoesNotExist:
             self.instance = CartItem.objects.create(product_id=product_id, cart_id=cart_id, quantity=quantity)
         return self.instance
-        
-    # def validate(self, data):
-    #     # check if the product exists
-    #     product_id = data['product_id']
-    #     try:
-    #         Product.objects.get(id=product_id)
-    #     except Product.DoesNotExist:
-    #         raise serializers.ValidationError('Product with id {} does not exist'.format(product_id))
-    #     return data
+    
+class UpdateCartItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CartItem
+        fields = ['quantity']
+
+    def update(self, instance, validated_data):
+        instance.quantity = validated_data['quantity']
+        instance.save()
+        return instance

@@ -22,7 +22,7 @@ from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from .pagination import ProductPagination
 from .filters import ProductFilter
 from .models import Cart, CartItem, Collection, OrderItem, Product, Review
-from .serializer import AddCartItemSerializer, CartItemSerializer, CartSerializer, ProductSerializer, ReviewSerializer
+from .serializer import AddCartItemSerializer, CartItemSerializer, CartSerializer, ProductSerializer, ReviewSerializer, UpdateCartItemSerializer
 from .serializer import CollectionSerializer
 
 
@@ -339,9 +339,13 @@ class CartViewSet(CreateModelMixin,
 
 class CartItemViewSet(ModelViewSet):
     
+    http_method_names = ['get', 'post', 'patch', 'delete']
+    
     def get_serializer_class(self):
         if self.request.method == 'POST':
             return AddCartItemSerializer
+        elif self.request.method == 'PATCH':
+            return UpdateCartItemSerializer
         return CartItemSerializer
     
     def get_queryset(self):
