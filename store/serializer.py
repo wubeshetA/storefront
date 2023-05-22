@@ -83,7 +83,7 @@ class SimpleProductSerializer(serializers.ModelSerializer):
 
 class CartItemSerializer(serializers.ModelSerializer):
 
-    product = SimpleProductSerializer(read_only=True)
+    product = SimpleProductSerializer()
     total_price = serializers.SerializerMethodField() # calculate total price
     
     def get_total_price(self, item: CartItem):
@@ -91,7 +91,7 @@ class CartItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = CartItem
         fields = ['id', 'product', 'quantity', 'total_price']
-        
+
     def create(self, validated_data):
         # return CartItem.objects.create(**validated_data)
         # include cart_id from context on the above commented line
@@ -111,4 +111,43 @@ class CartSerializer(serializers.ModelSerializer):
         model = Cart
         fields = ['id', 'items', 'total_price']
 
+
+class AddCartItemSerializer(serializers.ModelSerializer):
     
+    product_id = serializers.IntegerField()
+    
+    # validate product_id
+    def validate_product_id(self, value):
+        try:
+            Product.objects.get(id=value)
+        except Product.DoesNotExist:
+            raise serializers.ValidationError('Product with id {} does not exist'.format(value))
+        return value
+    class Meta:
+        model = CartItem
+        fields = ['product_id', 'quantity']
+        
+    def save(self, **kwargs):
+        
+        product_id = self.validated_data['product_id']
+        quantity = self.validated_data['quantity']
+        cart_id = self.context['cart_id']
+        
+        try:
+            cart_item = CartItem.objects.filter(product_id=product_id, cart_id=cart_id).get()
+            # update the value of quantity
+            cart_item.quantity += quantity
+            cart_item.save()
+            self.instance = cart_item
+        except CartItem.DoesNotExist:
+            self.instance = CartItem.objects.create(product_id=product_id, cart_id=cart_id, quantity=quantity)
+        return self.instance
+        
+    # def validate(self, data):
+    #     # check if the product exists
+    #     product_id = data['product_id']
+    #     try:
+    #         Product.objects.get(id=product_id)
+    #     except Product.DoesNotExist:
+    #         raise serializers.ValidationError('Product with id {} does not exist'.format(product_id))
+    #     return data
