@@ -75,7 +75,6 @@ class ReviewSerializer(serializers.ModelSerializer):
         # include product_id from context on the above commented line
         return Review.objects.create(product_id=self.context['product_id'], **validated_data)
 
-
 class SimpleProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
