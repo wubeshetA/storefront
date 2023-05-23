@@ -112,6 +112,11 @@ class Order(models.Model):
     # however we can not use order_set as a reference when querying the customer. we have to use just order.
     customer = models.ForeignKey(Customer, on_delete=models.PROTECT)
     
+    class Meta:
+        permissions = [
+            ("cancel_order", "Can cancel order"),
+        ]
+    
     
     # orderItem_set <--- cuz of the it's relationship with OrderItem
 class OrderItem(models.Model):
