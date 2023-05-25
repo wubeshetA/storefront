@@ -1,4 +1,5 @@
 from decimal import Decimal
+from django.db import transaction
 from rest_framework import serializers
 from .models import Cart, CartItem, Customer, Order, OrderItem, Product, Collection, Review
 
@@ -178,24 +179,29 @@ class OrderSerializer(serializers.ModelSerializer):
 class CreateOrderSerializer(serializers.Serializer):
     
     cart_id = serializers.UUIDField()
-    
-    # def validate_customer_id(self, value):
-    #     try:
-    #         Customer.objects.get(id=value)
-    #     except Customer.DoesNotExist:
-    #         raise serializers.ValidationError('Customer with id {} does not exist'.format(value))
-    #     return value
-    
-    def validate_cart_id(self, value):
-        try:
-            Cart.objects.get(id=value)
-        except Cart.DoesNotExist:
-            raise serializers.ValidationError('Cart with id {} does not exist'.format(value))
-        return value
-    
     def save(self, **kwargs):
-        user_id = self.context['user_id']
-        Order.objects.get_or_create(customer__user_id=user_id)
         
-    
-        
+        with transaction.atomic():
+            cart_id = self.validated_data['cart_id']
+            user_id = self.context['user_id']
+            # create order
+            (customer, created) = Customer.objects.get_or_create(user_id=user_id)
+            order = Order.objects.create(customer=customer)
+            # create order items from cart item
+            cart_items = CartItem.objects.filter(cart_id=cart_id)
+            
+            # create order_items from cart_items
+            order_items = [
+                
+                OrderItem(
+                                order=order,
+                                product=cart_item.product,
+                                quantity=cart_item.quantity,
+                                unit_price=cart_item.product.unit_price)
+                for cart_item in cart_items
+                ]
+            
+            # save order_items in bulk
+            OrderItem.objects.bulk_create(order_items)
+            
+            Cart.objects.get(id=cart_id).delete()
