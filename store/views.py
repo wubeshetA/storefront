@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404
 # import Count class
 from django.db.models import Count
 from django_filters.rest_framework import DjangoFilterBackend
+
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter, OrderingFilter
@@ -40,6 +41,7 @@ from .serializer import (AddCartItemSerializer,
                          ReviewSerializer, 
                          UpdateCartItemSerializer)
 from .serializer import CollectionSerializer
+from .permissions import IsAdminUserOrReadOnly
 
 
 ################### Views For Product ##########################
@@ -59,6 +61,9 @@ class ProductViewSet(ModelViewSet):
     ordering_fields = ['unit_price', 'last_update']
     # set pagination
     pagination_class = ProductPagination
+    
+    # set permission
+    permission_classes = [IsAdminUserOrReadOnly]
     
     # The following queryset is used to filter the products based on the
     # collection_id. The collection_id is passed as a query parameter.
@@ -203,6 +208,7 @@ written as a function-based view instead of a class-based view.
 class CollectionViewSet(ModelViewSet):
     queryset = Collection.objects.annotate(products_count=Count('products')).all()
     serializer_class = CollectionSerializer
+    permission_classes = [IsAdminUserOrReadOnly]
     
     def destroy(self, request, pk):
             collection = get_object_or_404(Collection, pk=pk)
@@ -234,6 +240,9 @@ class CollectionDetail(RetrieveUpdateDestroyAPIView):
         #     return get_object_or_404(
         #         Collection.objects.annotate(products_count=Count('products')).all(),
         #         pk=self.kwargs.get('pk'))
+        
+        # apply permissions
+        
         
         serializer_class = CollectionSerializer
         # override the destroy method to check if the collection has products
