@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404
 from django.db.models import Count
 from django_filters.rest_framework import DjangoFilterBackend
 
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, DjangoModelPermissions
 from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.decorators import api_view
@@ -41,7 +41,7 @@ from .serializer import (AddCartItemSerializer,
                          ReviewSerializer, 
                          UpdateCartItemSerializer)
 from .serializer import CollectionSerializer
-from .permissions import IsAdminUserOrReadOnly
+from .permissions import FullDjangoModelPermissions, IsAdminUserOrReadOnly
 
 
 ################### Views For Product ##########################
@@ -385,7 +385,8 @@ class CustomerViewSet(ModelViewSet):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
     
-    permission_classes = [IsAdminUser]
+    permission_classes = [FullDjangoModelPermissions]
+    
     
     # def get_permissions(self):
     #     if self.request.method == 'GET':
