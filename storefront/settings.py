@@ -150,6 +150,13 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+    
+    
+    # This setting can be overridden for particular views using the
+    # permission_classes attribute on the view.
+#     'DEFAULT_PERMISSION_CLASSES': [
+#         'rest_framework.permissions.IsAuthenticated',
+#     ]
 }
 
 SIMPLE_JWT = {
@@ -165,3 +172,5 @@ DJOSER = {
         'current_user': 'core.serializers.UserSerializer',
     }
 }
+
+
