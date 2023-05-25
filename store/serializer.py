@@ -174,3 +174,28 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = ['id', 'customer', 'placed_at', 'payment_status', 'items']
+
+class CreateOrderSerializer(serializers.Serializer):
+    
+    cart_id = serializers.UUIDField()
+    
+    # def validate_customer_id(self, value):
+    #     try:
+    #         Customer.objects.get(id=value)
+    #     except Customer.DoesNotExist:
+    #         raise serializers.ValidationError('Customer with id {} does not exist'.format(value))
+    #     return value
+    
+    def validate_cart_id(self, value):
+        try:
+            Cart.objects.get(id=value)
+        except Cart.DoesNotExist:
+            raise serializers.ValidationError('Cart with id {} does not exist'.format(value))
+        return value
+    
+    def save(self, **kwargs):
+        user_id = self.context['user_id']
+        Order.objects.get_or_create(customer__user_id=user_id)
+        
+    
+        

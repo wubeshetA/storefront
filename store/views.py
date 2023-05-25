@@ -35,7 +35,7 @@ from .models import (Cart,
 
 from .serializer import (AddCartItemSerializer,
                          CartItemSerializer,
-                         CartSerializer,
+                         CartSerializer, CreateOrderSerializer,
                          CustomerSerializer, OrderSerializer, 
                          ProductSerializer, 
                          ReviewSerializer, 
@@ -377,6 +377,7 @@ class CartItemViewSet(ModelViewSet):
     def get_queryset(self):
         return CartItem.objects.filter(cart_id=self.kwargs.get('cart_pk'))\
             .select_related('product')
+
     
     def get_serializer_context(self):
         return {'cart_id': self.kwargs.get('cart_pk')}
@@ -418,5 +419,15 @@ class OrderViewSet(ModelViewSet):
             return Order.objects.all()
         return Order.objects.filter(customer__user_id=self.request.user.id)
 
-    serializer_class = OrderSerializer
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return CreateOrderSerializer
+        return OrderSerializer
+    
+    def get_serializer_context(self):
+        return {'user_id': self.request.user.id}
+    
+    
+    
+
 
