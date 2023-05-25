@@ -28,7 +28,7 @@ from .filters import ProductFilter
 from .models import (Cart, 
                      CartItem, 
                      Collection, 
-                     Customer, 
+                     Customer, Order, 
                      OrderItem, 
                      Product, 
                      Review)
@@ -36,7 +36,7 @@ from .models import (Cart,
 from .serializer import (AddCartItemSerializer,
                          CartItemSerializer,
                          CartSerializer,
-                         CustomerSerializer, 
+                         CustomerSerializer, OrderSerializer, 
                          ProductSerializer, 
                          ReviewSerializer, 
                          UpdateCartItemSerializer)
@@ -404,4 +404,13 @@ class CustomerViewSet(ModelViewSet):
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data)
+        
+        
+        
+# ========= Order viewset =================
+
+class OrderViewSet(ModelViewSet):
+    
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
 
