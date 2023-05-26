@@ -214,3 +214,8 @@ class CreateOrderSerializer(serializers.Serializer):
             
             Cart.objects.get(id=cart_id).delete()
             return order
+        
+class UpdateOrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields = ['payment_status']
