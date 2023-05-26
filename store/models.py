@@ -122,7 +122,7 @@ class Order(models.Model):
 class OrderItem(models.Model):
     # If an order is deleted, OrderItem will not be deleted.
     # I.e, if order has at least one order item, the item will not be deleted.
-    order = models.ForeignKey(Order, on_delete=models.PROTECT)
+    order = models.ForeignKey(Order, on_delete=models.PROTECT, related_name='items')
     # if we accidentally delete a product, we don't want to delete the order item.
     product = models.ForeignKey(Product, on_delete=models.PROTECT, related_name='order_items')
     quantity = models.PositiveSmallIntegerField()
