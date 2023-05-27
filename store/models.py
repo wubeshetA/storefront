@@ -10,6 +10,8 @@ from django.core.validators import MinValueValidator
 # import settings from django auth
 from django.conf import settings
 
+from store.validators import validate_image_size
+
 class Promotion(models.Model):
     description = models.CharField(max_length=255)
     discount = models.FloatField()
@@ -58,8 +60,14 @@ class Product(models.Model):
         ordering = ['title']
         
 class ProductImage(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="images")
-    image = models.ImageField(upload_to="store/images")
+    product = models.ForeignKey(
+        Product, 
+        on_delete=models.CASCADE,
+        related_name="images",
+        )
+    image = models.ImageField(upload_to="store/images",
+                              validators=[validate_image_size]
+        )
     
 class Customer(models.Model):
     MEMBERSHIP_BRONZE = 'B'
