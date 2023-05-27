@@ -11,6 +11,7 @@ python-dotenv = "*"
 djangorestframework = "*"
 django-filter = "*"
 pillow = "*"
+django-cors-headers = "*"
 
 [dev-packages]
 
