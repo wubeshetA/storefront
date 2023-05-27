@@ -1,7 +1,7 @@
 from decimal import Decimal
 from django.db import transaction
 from rest_framework import serializers
-from .models import Cart, CartItem, Customer, Order, OrderItem, Product, Collection, Review
+from .models import Cart, CartItem, Customer, Order, OrderItem, Product, Collection, ProductImage, Review
 
 
 class CollectionSerializer(serializers.ModelSerializer):
@@ -13,17 +13,31 @@ class CollectionSerializer(serializers.ModelSerializer):
                 
     # id = serializers.IntegerField()
     # title = serializers.CharField(max_length=255)
+    
+class ProductImageSerializer(serializers.ModelSerializer):
+        
+        class Meta:
+            model = ProductImage
+            fields = ['id', 'image']
+        
+        def create(self, validated_data):
+            return ProductImage.objects.create(product_id=self.context['product_id'], **validated_data)
+        
+        
 class ProductSerializer(serializers.ModelSerializer):
     
+    images = ProductImageSerializer(many=True, read_only=True)
     class Meta:
         model = Product
         fields = [
+            'id',
             'title',
             'description',
             'unit_price',
             'price_with_tax',
             'inventory',
             'collection',
+            'images'
         ]
         
     """The following fields were added when the serializer was created
@@ -219,3 +233,5 @@ class UpdateOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = ['payment_status']
+
+

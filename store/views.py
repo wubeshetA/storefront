@@ -30,13 +30,13 @@ from .models import (Cart,
                      Collection, 
                      Customer, Order, 
                      OrderItem, 
-                     Product, 
+                     Product, ProductImage, 
                      Review)
 
 from .serializer import (AddCartItemSerializer,
                          CartItemSerializer,
                          CartSerializer, CreateOrderSerializer,
-                         CustomerSerializer, OrderSerializer, 
+                         CustomerSerializer, OrderSerializer, ProductImageSerializer, 
                          ProductSerializer, 
                          ReviewSerializer, 
                          UpdateCartItemSerializer, UpdateOrderSerializer)
@@ -52,7 +52,7 @@ class ProductViewSet(ModelViewSet):
     """
     # * if we want only a readonly operation, we can use ReadOnlyModelViewSet
     # * if we want only a create operation, we can use CreateModelViewSet
-    queryset = Product.objects.all()
+    queryset = Product.objects.prefetch_related('images').all()
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     # filterset_fields = ['collection_id']
     filterset_class = ProductFilter
@@ -439,8 +439,18 @@ class OrderViewSet(ModelViewSet):
         elif self.request.method == 'PATCH':
             return UpdateOrderSerializer
         return OrderSerializer
-
     
+    
+# ========= ProductImage viewset =================
+
+class ProductImageViewSet(ModelViewSet):
+    
+    def get_queryset(self):
+        return ProductImage.objects.filter(product_id=self.kwargs.get('product_pk'))
+    
+    def get_serializer_context(self):
+        return {'product_id': self.kwargs.get('product_pk')}
+    serializer_class = ProductImageSerializer
     
     
 
