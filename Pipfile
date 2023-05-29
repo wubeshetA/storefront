@@ -12,6 +12,8 @@ djangorestframework = "*"
 django-filter = "*"
 pillow = "*"
 django-cors-headers = "*"
+redis = "*"
+celery = "*"
 
 [dev-packages]
 

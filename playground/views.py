@@ -9,8 +9,13 @@ from django.db.models import Q, F
 from django.db.models.aggregates import Count, Sum, Max, Min, Avg
 # import ExpressionWrapper
 from django.db.models.expressions import ExpressionWrapper
+
+from django.core.mail import EmailMessage, BadHeaderError, send_mail
+from .tasks import notify_customers
 # Create your views here.
 def hello_world(request):
+    notify_customers.delay("Hello delay")
+    return HttpResponse("Hello World")
     
     # query_set = Product.objects.all()
     # for item in query_set:
@@ -95,20 +100,34 @@ def hello_world(request):
     # queryset = Collection.objects.annotate(number_of_products=Count('product'))
     # •Customers with more than 5 orders 
 
-    queryset = Customer.objects.annotate(frequent_customers=Count('order')).filter(frequent_customers__gt=5)
+    # queryset = Customer.objects.annotate(frequent_customers=Count('order')).filter(frequent_customers__gt=5)
     # print(queryset)
     
     # •Customers and the total amount they’ve spent
-    queryset = Customer.objects.annotate(
-        total_spent=Sum(F('order__orderitem__quantity') * F('order__orderitem__unit_price'))
-        )
+    # queryset = Customer.objects.annotate(
+    #     total_spent=Sum(F('order__orderitem__quantity') * F('order__orderitem__unit_price'))
+        # )
     # print(queryset)
     
     #•Top 5 best-selling products and their total sales
-    queryset = Product.objects.annotate(
-        total_sales=Sum(F('orderitem__quantity') * F('orderitem__unit_price'))
-    ).order_by('-total_sales')[:5]
-    print(queryset)
+    # queryset = Product.objects.annotate(
+    #     total_sales=Sum(F('orderitem__quantity') * F('orderitem__unit_price'))
+    # ).order_by('-total_sales')[:5]
+    # print(queryset)
+    
+    # * sending emails
+    # try:
+    #     message = EmailMessage('Subject', 'body message', 'fromwube@info.com', ['wubesehttt@gmail.com'])
+    #     message.attach_file('playground/static/images/cat.jpeg')
+    #     message.send()
+    #     print('message sent successfully')
+    #     # send_mail('subject', 'message', 'info@wube.com', ['w.yimam@alustudent.com'])
+    # except BadHeaderError:
+    #     return HttpResponse('Invalid header found.')
+    # return HttpResponse('Success')
+    
+    # send mail
+    
     
     
     return render(request, 'hello.html', {'name': 'Wube'})
