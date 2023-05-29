@@ -11,8 +11,11 @@ from django.db.models.aggregates import Count, Sum, Max, Min, Avg
 from django.db.models.expressions import ExpressionWrapper
 
 from django.core.mail import EmailMessage, BadHeaderError, send_mail
+from .tasks import notify_customers
 # Create your views here.
 def hello_world(request):
+    notify_customers.delay("Hello delay")
+    return HttpResponse("Hello World")
     
     # query_set = Product.objects.all()
     # for item in query_set:
@@ -112,17 +115,19 @@ def hello_world(request):
     # ).order_by('-total_sales')[:5]
     # print(queryset)
     
-    try:
-        message = EmailMessage('Subject', 'body message', 'fromwube@info.com', ['wubesehttt@gmail.com'])
-        message.attach_file('playground/static/images/cat.jpeg')
-        message.send()
-        print('message sent successfully')
-        # send_mail('subject', 'message', 'info@wube.com', ['w.yimam@alustudent.com'])
-    except BadHeaderError:
-        return HttpResponse('Invalid header found.')
-    return HttpResponse('Success')
+    # * sending emails
+    # try:
+    #     message = EmailMessage('Subject', 'body message', 'fromwube@info.com', ['wubesehttt@gmail.com'])
+    #     message.attach_file('playground/static/images/cat.jpeg')
+    #     message.send()
+    #     print('message sent successfully')
+    #     # send_mail('subject', 'message', 'info@wube.com', ['w.yimam@alustudent.com'])
+    # except BadHeaderError:
+    #     return HttpResponse('Invalid header found.')
+    # return HttpResponse('Success')
     
     # send mail
     
     
-    # return render(request, 'hello.html', {'name': 'Wube'})
+    
+    return render(request, 'hello.html', {'name': 'Wube'})

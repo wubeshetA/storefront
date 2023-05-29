@@ -3,7 +3,6 @@ from typing import Any
 from django.contrib import admin
 from django.db.models.query import QuerySet
 from django.http.request import HttpRequest
-
 from . import models
 from django.db.models.aggregates import Count
 from django.utils.html import format_html, urlencode
