@@ -131,5 +131,6 @@ class TestDeleteCollection:
         response = api_client.delete(f'/store/collections/{collection.id}/')
         assert response.status_code == status.HTTP_204_NO_CONTENT
         assert response.data is None
-    
+        
+
     
