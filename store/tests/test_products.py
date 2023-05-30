@@ -126,4 +126,13 @@ class TestDeleteProduct:
     
 @pytest.mark.django_db
 class TestGetProduct:
-    pass
+    
+    def test_if_product_not_exit_return_404(self, api_client):
+        response = api_client.get('/store/products/1/')
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+    
+    def test_if_product_exists_returns_200(self, api_client):
+        product = baker.make(Product, id=1)
+        response = api_client.get(f'/store/products/{product.id}/')
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data.get('id') == product.id
