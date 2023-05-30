@@ -1,13 +1,23 @@
 import pytest
 from rest_framework import status
 from model_bakery import baker
+# import APIclient
+from rest_framework.test import APIClient
+from django.contrib.auth.models import User
 
-from store.models import Collection
+from store.models import Collection, Product
 @pytest.fixture
 def create_product(api_client):
     def do_create_product(product):
         return api_client.post('/store/products/', product)
     return do_create_product
+
+
+# @pytest.fixture
+# def update_product(api_client):
+#     def do_update_product(product):
+#         return api_client.put('/store/products/', product)
+#     return do_update_product
 
 @pytest.mark.django_db
 class TestCreateProduct:
@@ -38,19 +48,57 @@ class TestCreateProduct:
         authenticate(is_staff=True)
         collection = baker.make(Collection)
         response = create_product(
-                {
+            {
                 "title": "a",
                 "description": "description",
                 "unit_price": 5,
                 "inventory": 2,
                 "collection": collection.id
-                }
-            )
+            }
+        )
         assert response.status_code == status.HTTP_201_CREATED
         assert response.data.get('id') > 0
-         
+
+@pytest.mark.django_db
 class TestUpdateProduct:
-    pass
+    def test_if_user_is_anonymous_returns_401(self):
+        client = APIClient()
+        response = client.put('/store/products/1/', {})
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+    
+    def test_if_user_is_not_admin_returns_403(self, api_client, authenticate):
+
+        authenticate(is_staff=False)
+        response = api_client.put('/store/products/1/', {})
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+    
+    def test_if_product_not_exit_return_404(self, api_client, authenticate):
+        authenticate(is_staff=True)
+        response = api_client.put('/store/products/1/', {})
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+    
+    def test_if_data_is_not_valid_returns_400(self, api_client, authenticate):
+        authenticate(is_staff=True)
+        baker.make(Product, id=1)
+        response = api_client.put('/store/products/1/', {}) # empty data
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+    
+    def test_if_data_is_valid_returns_200(self, api_client, authenticate):
+        authenticate(is_staff=True)
+        product = baker.make(Product, id=1)
+        print("=====================================")
+        print(product.__dict__)
+        response = api_client.put(f'/store/products/{product.id}/', {
+            "title": product.title,
+            "description": "updated description",
+            "unit_price": product.unit_price,
+            "inventory": product.inventory,
+            "collection": product.collection.id
+        })
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data.get('id') == product.id
+        assert response.data.get('description') == "updated description"
+        
 class TestDeleteProduct:
     pass
 class TestGetProduct:
