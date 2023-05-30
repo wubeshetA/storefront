@@ -91,15 +91,39 @@ class TestUpdateProduct:
         response = api_client.put(f'/store/products/{product.id}/', {
             "title": product.title,
             "description": "updated description",
-            "unit_price": product.unit_price,
-            "inventory": product.inventory,
+            "unit_price": 4,
+            "inventory": 2,
             "collection": product.collection.id
         })
         assert response.status_code == status.HTTP_200_OK
         assert response.data.get('id') == product.id
         assert response.data.get('description') == "updated description"
-        
+
+
+@pytest.mark.django_db
 class TestDeleteProduct:
-    pass
+    
+    def test_if_user_is_anonymous_returns_401(self, api_client):
+        response = api_client.delete('/store/products/1/')
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+    
+    def test_if_user_is_not_admin_returns_403(self, api_client, authenticate):
+        authenticate(is_staff=False)
+        response = api_client.delete('/store/products/1/')
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+    
+    def test_if_product_not_exit_return_404(self, api_client, authenticate):
+        authenticate(is_staff=True)
+        response = api_client.delete('/store/products/1/')
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+    
+    def test_if_product_exists_returns_204(self, api_client, authenticate):
+        authenticate(is_staff=True)
+        product = baker.make(Product, id=1)
+        response = api_client.delete(f'/store/products/{product.id}/')
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+        assert response.data is None
+    
+@pytest.mark.django_db
 class TestGetProduct:
     pass
