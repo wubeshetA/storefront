@@ -8,23 +8,35 @@ from store.models import Order
 from store.models import OrderItem
 from django.core.cache import cache
 from django.db.models import Q, F
+
 from django.db.models.aggregates import Count, Sum, Max, Min, Avg
 # import ExpressionWrapper
 from django.db.models.expressions import ExpressionWrapper
-
+from django.views.decorators.cache import cache_page
+from django.utils.decorators import method_decorator
 from django.core.mail import EmailMessage, BadHeaderError, send_mail
+from rest_framework.views import APIView
 from .tasks import notify_customers
 # Create your views here.
-def hello_world(request):
+# def hello_world(request):
     
-    key = "httpbin_response"
-    if cache.get(key) is None:
+#     key = "httpbin_response"
+#     if cache.get(key) is None:
+#         response = requests.get('https://httpbin.org/delay/2')
+#         data = response.json()
+#         cache.set(key, data)
+#     # send request to the api that repond after some delay
+#     # response = requests.get('https://httpbin.org/delay/2')
+#     return HttpResponse(cache.get(key))
+
+
+class ViewHello(APIView):
+    
+    @method_decorator(cache_page(60))
+    def get(self, request):
         response = requests.get('https://httpbin.org/delay/2')
         data = response.json()
-        cache.set(key, data)
-    # send request to the api that repond after some delay
-    # response = requests.get('https://httpbin.org/delay/2')
-    return HttpResponse(cache.get(key))
+        return HttpResponse(data)
     
     # query_set = Product.objects.all()
     # for item in query_set:
