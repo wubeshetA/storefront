@@ -1,7 +1,5 @@
 from rest_framework import status
 import pytest
-from model_bakery import baker
-from store.models import Collection
 
 @pytest.mark.django_db
 class TestListCustomer:
@@ -19,3 +17,33 @@ class TestListCustomer:
         authenticate(is_staff=True)
         response = api_client.get('/store/customers/')
         assert response.status_code == status.HTTP_200_OK
+
+@pytest.mark.django_db
+class TestGetCustomerProfile:
+    
+    def test_if_user_is_anonymous_returns_401(self, api_client):
+        response = api_client.get('/store/customers/me/')
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+        
+    # def test_if_user_is_authenticated_returns_200(self, api_client, authenticate):
+    #     authenticate(is_staff=False)
+    #     user = baker.make()
+    #     customer = baker.make(Customer, user_id=user.id)
+    #     response = api_client.get('/store/customers/me/')
+    #     assert response.status_code == status.HTTP_200_OK
+        
+@pytest.mark.django_db
+class TestUpdateCustomerProfile:
+    
+    def test_if_user_is_anonymous_returns_401(self, api_client):
+        response = api_client.put('/store/customers/me/')
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+        
+    # def test_if_user_is_authenticated_returns_200(self, authenticate, api_client):
+    #     authenticate()
+    #     # create a user to get it's id
+    #     user = baker.make(User)
+    
+        
+        
+        
