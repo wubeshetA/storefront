@@ -1,10 +1,12 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+import requests
 from store.models import Product
 from store.models import Customer
 from store.models import Collection
 from store.models import Order
 from store.models import OrderItem
+from django.core.cache import cache
 from django.db.models import Q, F
 from django.db.models.aggregates import Count, Sum, Max, Min, Avg
 # import ExpressionWrapper
@@ -14,8 +16,15 @@ from django.core.mail import EmailMessage, BadHeaderError, send_mail
 from .tasks import notify_customers
 # Create your views here.
 def hello_world(request):
-    notify_customers.delay("Hello delay")
-    return HttpResponse("Hello World")
+    
+    key = "httpbin_response"
+    if cache.get(key) is None:
+        response = requests.get('https://httpbin.org/delay/2')
+        data = response.json()
+        cache.set(key, data)
+    # send request to the api that repond after some delay
+    # response = requests.get('https://httpbin.org/delay/2')
+    return HttpResponse(cache.get(key))
     
     # query_set = Product.objects.all()
     # for item in query_set:
@@ -130,4 +139,4 @@ def hello_world(request):
     
     
     
-    return render(request, 'hello.html', {'name': 'Wube'})
+    # return render(request, 'hello.html', {'name': 'Wube'})
