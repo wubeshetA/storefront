@@ -59,7 +59,7 @@ INSTALLED_APPS = [
     'playground',
     "debug_toolbar",
     "store",
-    "tags", 
+    "tags",
     "likes",
     "core",
 ]
@@ -167,18 +167,18 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
-    
-    
+
+
     # This setting can be overridden for particular views using the
     # permission_classes attribute on the view.
-#     'DEFAULT_PERMISSION_CLASSES': [
-#         'rest_framework.permissions.IsAuthenticated',
-#     ]
+    #     'DEFAULT_PERMISSION_CLASSES': [
+    #         'rest_framework.permissions.IsAuthenticated',
+    #     ]
 }
 
 SIMPLE_JWT = {
-   'AUTH_HEADER_TYPES': ('JWT',),
-   "ACCESS_TOKEN_LIFETIME": timedelta(days=2)
+    'AUTH_HEADER_TYPES': ('JWT',),
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=2)
 }
 
 AUTH_USER_MODEL = "core.User"
@@ -194,7 +194,7 @@ DJOSER = {
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "TIMEOUT": 60 * 10 , # 10 minutes
+        "TIMEOUT": 60 * 10,  # 10 minutes
         "LOCATION": "redis://127.0.0.1:6379/2",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
@@ -213,3 +213,31 @@ DEFAULT_FROM_EMAIL = 'admin@localhost'
 
 
 CELERY_BROKER_URL = 'redis://localhost:6379/1'
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler', # this will write log messages to the console
+        },
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': 'genera.log',
+            },
+    },
+    'loggers': {
+        # empty key means it will log messages from all apps in the project. we can specify app names as the key to capture logs only from that app
+        '': { 
+            'handlers': ['console', 'file'],
+            'level': os.environ.get('DJANGO_LOG_LEVEL', 'INFO'),
+        },
+        'formatters': {
+            'verbose': {
+                'format': ' {asctime} {levelname} - {name} - {message}',
+                'style': '{' # string.Template
+            }
+                },
+        },
+}
