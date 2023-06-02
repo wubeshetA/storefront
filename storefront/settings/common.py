@@ -23,13 +23,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-n2ik^e1^@yjbyq%$0u7d*wy-gr%5-$*^!f(5x&s1$!#acikjer'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
 
 INTERNAL_IPS = [
     # ...
@@ -101,20 +94,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'storefront.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'storefront',
-        'HOST': 'localhost',
-        # 'PORT': '3306',
-        'USER': 'root',
-        'PASSWORD': os.getenv("DB_PASSWORD"),
-    }
-}
 
 
 # Password validation
@@ -220,24 +199,25 @@ LOGGING = {
     'disable_existing_loggers': False,
     'handlers': {
         'console': {
-            'class': 'logging.StreamHandler', # this will write log messages to the console
+            'class': 'logging.StreamHandler',  # this will write log messages to the console
         },
         'file': {
             'class': 'logging.FileHandler',
-            'filename': 'genera.log',
-            },
+            'filename': 'debug.log',
+            'formatter': 'verbose',
+        },
     },
     'loggers': {
         # empty key means it will log messages from all apps in the project. we can specify app names as the key to capture logs only from that app
-        '': { 
+        '': {
             'handlers': ['console', 'file'],
             'level': os.environ.get('DJANGO_LOG_LEVEL', 'INFO'),
         },
-        'formatters': {
-            'verbose': {
-                'format': ' {asctime} {levelname} - {name} - {message}',
-                'style': '{' # string.Template
-            }
-                },
-        },
+    },
+    'formatters': {
+        'verbose': {
+            'format': ' {asctime} {levelname} - {name} - {message}',
+            'style': '{'  # string.Template
+        }
+    },
 }

@@ -17,6 +17,7 @@ from django.utils.decorators import method_decorator
 from django.core.mail import EmailMessage, BadHeaderError, send_mail
 from rest_framework.views import APIView
 from .tasks import notify_customers
+import logging
 # Create your views here.
 # def hello_world(request):
     
@@ -29,12 +30,21 @@ from .tasks import notify_customers
 #     # response = requests.get('https://httpbin.org/delay/2')
 #     return HttpResponse(cache.get(key))
 
+logger = logging.getLogger(__name__)
 
 class ViewHello(APIView):
     
-    @method_decorator(cache_page(60))
+    # @method_decorator(cache_page(60))
     def get(self, request):
-        response = requests.get('https://httpbin.org/delay/2')
+        try:
+            logger.info("Calling httpbin")
+            response = requests.get('https://httpbin.org/delay/2')
+            
+            logger.info("received response from httpbin")
+            
+        except requests.ConnectionError:
+            logger.critical("failed to connect to httpbin")
+            return HttpResponse("failed to connect to httpbin")
         data = response.json()
         return HttpResponse(data)
     
