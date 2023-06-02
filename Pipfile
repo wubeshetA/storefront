@@ -15,6 +15,7 @@ django-cors-headers = "*"
 redis = "*"
 celery = "*"
 django-redis = "*"
+whitenoise = "*"
 
 [dev-packages]
 pytest = "*"
