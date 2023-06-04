@@ -26,3 +26,10 @@ CACHES = {
         }
     }
 }
+
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = os.environ.get('MAILGUN_SMTP_SERVER')
+EMAIL_HOST_USER = os.environ.get('MAILGUN_SMTP_LOGIN')
+EMAIL_HOST_PASSWORD = os.environ.get('MAILGUN_SMTP_PASSWORD')
+EMAIL_PORT = os.environ.get('MAILGUN_SMTP_PORT')
+# DEFAULT_FROM_EMAIL = 'admin@localhost'
