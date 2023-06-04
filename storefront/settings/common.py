@@ -190,7 +190,7 @@ EMAIL_PORT = 2525
 DEFAULT_FROM_EMAIL = 'admin@localhost'
 
 
-CELERY_BROKER_URL = 'redis://localhost:6379/1'
+
 
 
 LOGGING = {

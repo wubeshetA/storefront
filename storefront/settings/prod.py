@@ -9,6 +9,20 @@ DEBUG = False
 ALLOWED_HOSTS = ['wube-storefront.herokuapp.com']
 
 DATABASES = {
-    'default': dj_database_url.config() # this function look for env variable 
+    'default': dj_database_url.config()  # this function look for env variable
     # called DATABASE_URL and parse it to connection string
+}
+
+REDISCLOUD_URL = os.environ.get('REDISCLOUD_URL')
+CELERY_BROKER_URL = REDISCLOUD_URL
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "TIMEOUT": 60 * 10,  # 10 minutes
+        "LOCATION": REDISCLOUD_URL,
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
 }
