@@ -4,16 +4,30 @@ from .common import *
 SECRET_KEY = 'django-insecure-n2ik^e1^@yjbyq%$0u7d*wy-gr%5-$*^!f(5x&s1$!#acikjer'
 DEBUG = True
 
+# db config for my mysql
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'storefront',
+#         'HOST': 'localhost',
+#         # 'PORT': '3306',
+#         'USER': 'root',
+#         'PASSWORD': os.getenv("DB_PASSWORD"),
+#     }
+# }
+
+# db config for postgres
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'storefront',
         'HOST': 'localhost',
         # 'PORT': '3306',
-        'USER': 'root',
+        'USER': 'postgres',
         'PASSWORD': os.getenv("DB_PASSWORD"),
     }
 }
+
 CELERY_BROKER_URL = 'redis://localhost:6379/1'
 
 CACHES = {
