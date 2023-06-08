@@ -21,6 +21,7 @@ dj-database-url = "*"
 djoser = "*"
 django-silk = "*"
 psycopg2 = "*"
+drf-nested-routers = "*"
 
 [dev-packages]
 pytest = "*"
