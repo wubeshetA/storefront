@@ -4,7 +4,7 @@ from .common import *
 
 
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
-DEBUG = False
+DEBUG = os.environ.get('DEBUG', False)
 
 ALLOWED_HOSTS = ['storefront-nsnsl.ondigitalocean.app']
 
