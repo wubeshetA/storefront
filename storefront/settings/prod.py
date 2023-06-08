@@ -1,5 +1,7 @@
 import os
+import sys
 import dj_database_url
+
 from .common import *
 
 
@@ -14,10 +16,13 @@ ALLOWED_HOSTS = ['storefront-nsnsl.ondigitalocean.app']
 #     # called DATABASE_URL and parse it to connection string
 # }
 
-if os.getenv('DATABASE_URL', None) is None:
-    raise Exception('DATABASE_URL environment variable not set')
+if len(sys.argv) > 1 and sys.argv[1] != 'collectstatic':
+    if os.getenv('DATABASE_URL', None) is None:
+        raise Exception('DATABASE_URL environment variable not set')
+
 DATABASES = {
         'default': dj_database_url.parse(os.environ.get('DATABASE_URL')),
+        
     }
 
 # DATABASES = {
