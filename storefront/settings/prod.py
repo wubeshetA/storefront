@@ -13,23 +13,25 @@ ALLOWED_HOSTS = ['storefront-nsnsl.ondigitalocean.app']
 #     'default': dj_database_url.config()  # this function look for env variable
 #     # called DATABASE_URL and parse it to connection string
 # }
-# DATABASES = {
-#     'default': dj_database_url.config()  # this function look for env variable
-#     # called DATABASE_URL and parse it to connection string
-# }
 
+if os.getenv('DATABASE_URL', None) is None:
+    raise Exception('DATABASE_URL environment variable not set')
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'storefront',
-        'HOST': 'storefront-postgres-server.postgres.database.azure.com',
-        # 'PORT': '3306',
-        'USER': 'wubeshet',
-        'PASSWORD': os.getenv('AZURE_DB_PASSWORD'),
-        'OPTIONS': {'sslmode': 'require'}
-    },
+        'default': dj_database_url.parse(os.environ.get('DATABASE_URL')),
+    }
 
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'storefront',
+#         'HOST': 'storefront-postgres-server.postgres.database.azure.com',
+#         # 'PORT': '3306',
+#         'USER': 'wubeshet',
+#         'PASSWORD': os.getenv('AZURE_DB_PASSWORD'),
+#         'OPTIONS': {'sslmode': 'require'}
+#     },
+
+# }
 
 # DATABASES = {
 #     'default': {
