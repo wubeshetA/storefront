@@ -29,7 +29,7 @@ urlpatterns = [
     
     path('', include('core.urls')),
     path('admin/', admin.site.urls),
-    path('playground/', include('playground.urls')),
+    # path('playground/', include('playground.urls')),
     path('store/', include('store.urls')),
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.jwt')),
@@ -37,7 +37,7 @@ urlpatterns = [
     
     path('api_schema/', get_schema_view(
         title='API Schema',
-        description='Guide for the REST API'
+        description='API guide for Storefront'
     ), name='api_schema'),
     
      path('docs/', TemplateView.as_view(
