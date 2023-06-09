@@ -18,11 +18,15 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
+# import get_schema_view
+from rest_framework.schemas import get_schema_view
+from django.views.generic import TemplateView
 
 
 admin.site.site_header = 'Storefront Admin'
 admin.site.index_title = 'Storefront Admin Portal'
 urlpatterns = [
+    
     path('', include('core.urls')),
     path('admin/', admin.site.urls),
     path('playground/', include('playground.urls')),
@@ -31,6 +35,15 @@ urlpatterns = [
     path('auth/', include('djoser.urls.jwt')),
     path('__debug__/', include('debug_toolbar.urls')),
     
+    path('api_schema/', get_schema_view(
+        title='API Schema',
+        description='Guide for the REST API'
+    ), name='api_schema'),
+    
+     path('docs/', TemplateView.as_view(
+        template_name='docs.html',
+        extra_context={'schema_url':'api_schema'}
+        ), name='swagger-ui'),
 
 ]
 

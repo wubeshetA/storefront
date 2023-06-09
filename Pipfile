@@ -22,6 +22,9 @@ djoser = "*"
 django-silk = "*"
 psycopg2 = "*"
 drf-nested-routers = "*"
+pyyaml = "*"
+uritemplate = "*"
+django-rest-swagger = "*"
 
 [dev-packages]
 pytest = "*"
