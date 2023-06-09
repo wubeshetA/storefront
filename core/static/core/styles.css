@@ -70,5 +70,18 @@ body {
   margin-right: 10px; /* Spacing between buttons */
 }
 .front .desc {
-  padding: 10px 10px 10px 10px;
+  padding: 10px 150px 10px 150px;
 }
+
+/* Media query for smaller screens */
+@media screen and (max-width: 768px) {
+  .front .desc {
+    padding: 10px 50px 10px 50px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .front .desc {
+    padding: 0px 0px 0px 0px;
+  }
+} 
