@@ -1,5 +1,5 @@
 body { 
-  margin: 0px 20px 0px 20px;
+  margin: 0px 40px 0px 40px;
 }
 
 .home-page { 
@@ -41,20 +41,27 @@ body {
   justify-content: center;
   flex-direction: column;
   /* align-items: center; */
-  padding-left: 150px;
-  padding-right: 150px;
+  padding-left: 200px;
+  padding-right: 200px;
   /* center contents on the center */
   justify-items: center;
   align-items: center;
 }
+
+@media screen and (max-width: 768px) {
+  .front  {
+  padding-left: 30px;
+  padding-right: 30px;
+  }
+}
+
+
 .front .front-conent {
   display: flex;
   /* flex-direction: column; */
   justify-content: center;
   align-items: center;
-  /* background-color: #1ec8aa; */
-  /* height: 100vh;
-  width: 100vw; */
+
 }
 
 .btn-container {
@@ -69,12 +76,12 @@ body {
   max-width: 200px; /* You can adjust the max-width value as needed */
   margin-right: 10px; /* Spacing between buttons */
 }
-.front .desc {
+/* .front .desc {
   padding: 10px 150px 10px 150px;
-}
+} */
 
 /* Media query for smaller screens */
-@media screen and (max-width: 768px) {
+/* @media screen and (max-width: 768px) {
   .front .desc {
     padding: 10px 50px 10px 50px;
   }
@@ -84,4 +91,4 @@ body {
   .front .desc {
     padding: 0px 0px 0px 0px;
   }
-} 
+}  */
