@@ -8,10 +8,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="{% static 'core/styles.css' %}">
+
+    <script>
+        var hostUrl = "{{ request.scheme }}://{{ request.get_host }}";
+        const api_doc_url = hostUrl + "/docs/";
+        const api_store_url = hostUrl + "/store/";
+        const api_admin_url = hostUrl + "/admin/";
+        console.log(hostUrl);
+      </script>
 </head>
 <body>
-    <div class="home-page">
-        <img src="{% static 'core/logo.svg' %}" alt="Logo" >
+
+    <div>
+
+        <ul class="navbar">
+            <div>
+                <li><a href="#"><img src="{% static 'core/storefront_logo.svg' %}" alt="Logo" class="logo"></a></li>
+            </div>
+            <div>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Services</a></li>
+                <li><a href="#">Contact</a></li>
+            </div>
+          </ul>
+    </div>
+    <div class="front">
+  
+            <h1>WELCOME TO STORFRONT</h1>
+            <div class="desc">
+
+                <p>This is a backend of an online store built with django. It contains a RESTful API that allows to create, read, update and delete products, categories, orders, users and many more. Use the following buttons to access the API documentation, the API itself and the Admin panel.</p>
+            </div>
+            <div class="btn-container">
+                <a href="./docs/" class="btn">API documentation</a>
+                <a href="./store/" class="btn">Go to store</a>
+                <a href="./admin/" class="btn">Admin</a>
+              </div>
+     
     </div>
     
 </body>
